@@ -1,3 +1,5 @@
+@import "/css/media.css";
+
 .head-line{
     margin-top: 1em;
     display: flex;
@@ -24,7 +26,6 @@ border-bottom: 4px double black;
 .menus button:hover{
     background-color: #ebebeb;
     border-radius: 3px;
-
 }
 
 .news-img{
@@ -34,4 +35,13 @@ border-bottom: 4px double black;
 .news{
     border-bottom: 2px solid #ebebeb;
     padding: 1.5em;
+}
+
+@media screen and (max-width:500px) {
+    .hidden {
+        display: inline;
+    }
+    .menus {
+        display: none;
+    }
 }
