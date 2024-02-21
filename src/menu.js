@@ -13,3 +13,6 @@ const openSearchBox=()=>{
     if(inputArea.style.display==="inline"){
         inputArea.style.display="none";    }else{inputArea.style.display="inline";}
 }
+
+
+
