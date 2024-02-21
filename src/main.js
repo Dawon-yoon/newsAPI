@@ -9,6 +9,9 @@ const input=document.getElementById("search-input");
 
 input.addEventListener("click",(()=>input.value=""));
 
+input.addEventListener("keypress",(function(event){if(event.key==="Enter"){searchNews()}}));
+
+
 const getLatestNews=async()=>{
 //newsapi📰
 //const url=new URL(`https://newsapi.org/v2/top-headlines?country=kr&apiKey=${API_KEY}`);
@@ -51,12 +54,27 @@ const data=await response.json();
 newsList=data.articles;
 render();
 }
+//imageurl유효성 체크
+const vailavbleImage=(imageUrl)=>{
+const image=new Image();
+image.src=imageUrl;
+return image.complete && image.width>0;
+}
+const imageError=(imageUrl)=>{
+    let image=new Image();
+    image.src=imageUrl
+    if(!image.complete){
+        return false
+    }else{
+        return true
+    }
+}
 
 const render=()=>{
     const newsHTML=newsList.map(news=>`<div class="row news">
             <div class="col-lg-4">
                 <img class="news-img" src=${
-                   news.urlToImage? news.urlToImage:"img/noimage.png"
+                   news.urlToImage && imageError(news.urlToImage)? news.urlToImage:"img/noimage.png"
                 }>
             </div>
             <div class="col-lg-8">
