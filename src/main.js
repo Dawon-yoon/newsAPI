@@ -1,6 +1,9 @@
 const API_KEY=`25418e7c92ad453fab51cbfce15c74d9`;
 let newsList=[];
 
+let url=new URL(`https://newsapi.org/v2/top-headlines?country=kr&apiKey=${API_KEY}`);
+
+
 const menus=document.querySelectorAll(".menus button");
 //menus는 어레이,어레이 각각에 클릭 이벤트를 주자
 menus.forEach((menu)=>menu.addEventListener("click",(event)=>getNewsByCategory(event)))
@@ -10,71 +13,65 @@ const input=document.getElementById("search-input");
 input.addEventListener("click",(()=>input.value=""));
 
 input.addEventListener("keypress",(function(event){if(event.key==="Enter"){searchNews()}}));
+ 
+const getNews=async()=>{
+    try{
+        const response=await fetch(url);
+        const data=await response.json(); 
+        if(response.status===200){
+            if(data.articles.length==0){
+                throw new Error("No matches for your search");
+            }
+            newsList=data.articles;
+            render();
+        }else{
+            throw new Error(data.message)
+        }       
+    }
+    catch(error){
+errorRender(error.message);
+    }
+    
+}
 
 
 const getLatestNews=async()=>{
 //newsapi📰
-//const url=new URL(`https://newsapi.org/v2/top-headlines?country=kr&apiKey=${API_KEY}`);
+//url=new URL(`https://newsapi.org/v2/top-headlines?country=kr&apiKey=${API_KEY}`);
 
 //코알api🩵
-const url=new URL(`https://stately-klepon-aea1f5.netlify.app/top-headlines`);
+url=new URL(`https://stately-klepon-aea1f5.netlify.app/top-headlines`);
 
-const response=await fetch(url);
-const data=await response.json(); 
-newsList=data.articles;
-render();
-console.log("data:",newsList);
+getNews();
 };
 
 const getNewsByCategory=async(event)=>{
 const category=event.target.textContent.toLowerCase();
-console.log(category);
 
 //newsapi📰
-//const url=new URL(`https://newsapi.org/v2/top-headlines?country=kr&category=${category}&apiKey=${API_KEY}`);
+//url=new URL(`https://newsapi.org/v2/top-headlines?country=kr&category=${category}&apiKey=${API_KEY}`);
 
 //코알api🩵
-const url=new URL(`https://stately-klepon-aea1f5.netlify.app/top-headlines?category=${category}`);
-
-const response= await fetch(url);
-const data= await response.json(); 
-newsList=data.articles;
-render();
+url=new URL(`https://stately-klepon-aea1f5.netlify.app/top-headlines?category=${category}`);
+getNews();
 }
 
 const searchNews=async()=>{
 const keyword=input.value;
 //newsapi📰
-//const url=new URL(`https://newsapi.org/v2/top-headlines?country=kr&q=${keyword}&apiKey=${API_KEY}`);
+//url=new URL(`https://newsapi.org/v2/top-headlines?country=kr&q=${keyword}&apiKey=${API_KEY}`);
 
 //코알api🩵
-const url=new URL(`https://stately-klepon-aea1f5.netlify.app/top-headlines?q=${keyword}`);
-const response=await fetch(url);
-const data=await response.json();
-newsList=data.articles;
-render();
+url=new URL(`https://stately-klepon-aea1f5.netlify.app/top-headlines?q=${keyword}`);
+getNews();
 }
-//imageurl유효성 체크
-const vailavbleImage=(imageUrl)=>{
-const image=new Image();
-image.src=imageUrl;
-return image.complete && image.width>0;
-}
-const imageError=(imageUrl)=>{
-    let image=new Image();
-    image.src=imageUrl
-    if(!image.complete){
-        return false
-    }else{
-        return true
-    }
-}
+   
 
 const render=()=>{
     const newsHTML=newsList.map(news=>`<div class="row news">
             <div class="col-lg-4">
                 <img class="news-img" src=${
-                   news.urlToImage && imageError(news.urlToImage)? news.urlToImage:"img/noimage.png"
+                    news.urlToImage? news.urlToImage:"img/noimage.png"
                 }>
             </div>
             <div class="col-lg-8">
@@ -88,5 +85,14 @@ const render=()=>{
     //join('')어레이를 문자열로 바꿔주는 함수
     document.getElementById("news-board").innerHTML=newsHTML;
 }
+
+const errorRender=(message)=>{
+const errorHTML=`<div class="alert alert-danger text-center" role="alert">
+  ${message}
+</div>`;
+document.getElementById("news-board").innerHTML=errorHTML;
+}
+
+
 
 getLatestNews();
